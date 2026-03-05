@@ -3,7 +3,7 @@
 :: BBFA — Docker + Cloudflare Tunnel Start Script
 :: ============================================================
 :: This script starts the Dockerized BBFA Server and then 
-:: tunnels it to api.chetancj.com via Cloudflare.
+:: tunnels it to api.chetancj.in via Cloudflare.
 ::
 :: Re-Requirement: cloudflared must be installed on this PC.
 :: ============================================================
@@ -44,7 +44,7 @@ echo [OK] Server is starting on port 8700.
 timeout /t 3 /nobreak > nul
 
 :: 5. Start the Cloudflare Tunnel
-echo [2/2] Starting Cloudflare Tunnel (api.chetancj.com)...
+echo [2/2] Starting Cloudflare Tunnel (api.chetancj.in)...
 echo.
 echo Press Ctrl+C to stop the tunnel.
 echo.
