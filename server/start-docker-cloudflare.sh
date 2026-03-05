@@ -31,5 +31,5 @@ fi
 sleep 3
 
 # 5. Start Tunnel
-echo "[2/2] Starting Cloudflare Tunnel (api.chetancj.com)..."
+echo "[2/2] Starting Cloudflare Tunnel (api.chetancj.in)..."
 cloudflared tunnel run bbfa-backend
