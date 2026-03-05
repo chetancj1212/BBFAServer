@@ -1,0 +1,33 @@
+# ── Build artifacts ──
+__pycache__/
+*.py[cod]
+*.pyo
+dist/
+build/
+*.spec
+
+# ── Runtime data (mounted as volumes) ──
+data/
+attendance.db
+
+# ── Git ──
+.git/
+.gitignore
+
+# ── Logs ──
+*.log
+
+# ── IDE ──
+.vscode/
+.idea/
+
+# ── Dev files ──
+requirements-dev.txt
+
+# ── OS ──
+Thumbs.db
+.DS_Store
+
+# ── Docker ──
+Dockerfile
+.dockerignore
