@@ -46,8 +46,7 @@ RUN mkdir -p /app/data /app/weights
 
 # ── Volumes ──
 # data/   → SQLite databases (persist across restarts)
-# weights/ → ONNX models (auto-downloaded on first run)
-VOLUME ["/app/data", "/app/weights"]
+VOLUME ["/app/data"]
 
 # ── Environment ──
 ENV HOST=0.0.0.0
