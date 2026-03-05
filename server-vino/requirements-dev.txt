@@ -1,0 +1,11 @@
+# Dev / Build-only dependencies
+# Install with: pip install -r requirements-dev.txt
+
+black       # Code formatter
+ruff        # Linter
+
+# PyInstaller build dependencies (not needed at runtime)
+pyinstaller
+lap==0.5.12
+scipy==1.16.0
+pywin32-ctypes; sys_platform == 'win32'

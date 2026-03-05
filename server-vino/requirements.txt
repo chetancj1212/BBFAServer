@@ -1,0 +1,30 @@
+#   Tested with Python 3.10.9 / 3.13.x
+
+# FastAPI and web server dependencies
+fastapi==0.116.2
+uvicorn[standard]==0.36.0
+
+# Computer vision and image processing
+opencv-python==4.12.0.88
+numpy==2.2.6
+
+# Data validation and serialization
+pydantic==2.11.9
+
+# ONNX runtime (fallback inference engine)
+onnxruntime==1.24.2
+
+# OpenVINO (primary inference engine — Intel CPU/GPU acceleration)
+openvino==2025.4.1
+
+# Attendance database dependencies
+ulid==1.1
+
+# Multipart form data parsing
+python-multipart==0.0.20
+
+# Rate limiting (Scalability Fix #3)
+slowapi==0.1.9
+
+# Production multi-worker server (Scalability Fix #5)
+gunicorn==23.0.0

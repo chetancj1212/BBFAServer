@@ -1,0 +1,115 @@
+#include <WiFi.h>
+#include "time.h"
+#include <mbedtls/md.h>
+#include <BLEDevice.h>
+#include <BLEUtils.h>
+#include <BLEServer.h>
+
+// --- CONFIGURATION ---
+#define DEVICE_NAME "B_106"
+#define LED_PIN 21             // XIAO S3 LED is Active LOW
+const char* ssid     = "g965g"; 
+const char* password = "chetan12";
+
+BLEAdvertising *pAdvertising;
+unsigned long lastUpdate = 0;
+
+// --- SHA-256 HASHING LOGIC ---
+uint32_t generateTOTP() {
+    time_t now;
+    time(&now);
+    uint32_t timeStep = now / 30; // 30-second window
+    
+    // Create the input: "ESPB106" + TimeStep
+    String input = String(DEVICE_NAME) + String(timeStep);
+    
+    byte shaResult[32];
+    mbedtls_md_context_t ctx;
+    mbedtls_md_init(&ctx);
+    mbedtls_md_setup(&ctx, mbedtls_md_info_from_type(MBEDTLS_MD_SHA256), 0);
+    mbedtls_md_starts(&ctx);
+    mbedtls_md_update(&ctx, (const unsigned char*) input.c_str(), input.length());
+    mbedtls_md_finish(&ctx, shaResult);
+    mbedtls_md_free(&ctx);
+
+    // Convert first 4 bytes of Hash to Integer
+    uint32_t hashInt = (shaResult[0] << 24) | (shaResult[1] << 16) | (shaResult[2] << 8) | shaResult[3];
+    return hashInt % 100000000; // Force 8 digits
+}
+
+void updateAdvertising() {
+    // Flash LED to show update
+    digitalWrite(LED_PIN, LOW); 
+    
+    pAdvertising->stop();
+    delay(100); // Allow radio to reset
+
+    uint32_t currentCode = generateTOTP();
+    Serial.printf(">>> NEW TOKEN: %08u\n", currentCode);
+
+    BLEAdvertisementData oAdvertisementData = BLEAdvertisementData();
+    // 0x06 = General Discovery Mode (Required for Android)
+    oAdvertisementData.setFlags(0x06); 
+    oAdvertisementData.setName(DEVICE_NAME);
+    
+    // Pack the 8-digit code into Manufacturer Data (ID: 0xFFFF)
+    String strData = "";
+    strData += (char)0xFF; strData += (char)0xFF; // Vendor ID
+    strData += (char)((currentCode >> 24) & 0xFF);
+    strData += (char)((currentCode >> 16) & 0xFF);
+    strData += (char)((currentCode >> 8) & 0xFF);
+    strData += (char)(currentCode & 0xFF);
+    oAdvertisementData.setManufacturerData(strData);
+
+    pAdvertising->setAdvertisementData(oAdvertisementData);
+    
+    // Adding Name to Scan Response ensures fast discovery
+    BLEAdvertisementData oScanResponse = BLEAdvertisementData();
+    oScanResponse.setName(DEVICE_NAME);
+    pAdvertising->setScanResponseData(oScanResponse);
+
+    pAdvertising->start();
+    
+    delay(100);
+    digitalWrite(LED_PIN, HIGH); // LED Off
+}
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(LED_PIN, OUTPUT);
+  digitalWrite(LED_PIN, LOW); // LED ON during setup
+
+  // 1. WiFi & Time Sync
+  WiFi.begin(ssid, password);
+  Serial.print("Connecting WiFi");
+  while (WiFi.status() != WL_CONNECTED) { delay(500); Serial.print("."); }
+  Serial.println(" Connected!");
+
+  configTime(19800, 0, "pool.ntp.org"); // India Time
+  struct tm timeinfo;
+  while(!getLocalTime(&timeinfo)){ delay(500); }
+  Serial.println("Time Synced.");
+  
+  // 2. Kill WiFi (Crucial for stability)
+  WiFi.disconnect(true);
+  WiFi.mode(WIFI_OFF);
+  Serial.println("WiFi OFF. Starting BLE...");
+
+  // 3. Init BLE
+  BLEDevice::init(DEVICE_NAME);
+  pAdvertising = BLEDevice::getAdvertising();
+  
+  // Set fast interval (100ms) for quick phone discovery
+  pAdvertising->setMinInterval(0x64); 
+  pAdvertising->setMaxInterval(0x64);
+
+  updateAdvertising();
+}
+
+void loop() {
+  if (millis() - lastUpdate > 30000) {
+    updateAdvertising();
+    lastUpdate = millis();
+  }
+  delay(100);
+}

@@ -1,0 +1,64 @@
+# ============================================================
+# BBFA .gitignore
+# ============================================================
+
+# ──── Python ────
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.egg-info/
+*.egg
+dist/
+build/
+*.spec
+
+# ──── Virtual environments ────
+venv/
+.venv/
+env/
+.env/
+
+# ──── IDE ────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ──── OS files ────
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# ──── Model weights (too large for Git — use Git LFS or download script) ────
+server/weights/*.onnx
+server-vino/weights/*.onnx
+
+# ──── Runtime data (generated at runtime, not source code) ────
+server/data/*.db
+server-vino/data/*.db
+server/attendance.db
+server-vino/attendance.db
+
+# ──── Logs ────
+*.log
+server/server_debug.log
+server-vino/server_debug.log
+
+# ──── Error dumps ────
+server-vino/kernel.errors.txt
+
+# ──── Node.js (panel / superadmin / studentapp) ────
+node_modules/
+.next/
+out/
+.env.local
+.env.*.local
+
+# ──── Netlify ────
+.netlify/
+
+# ──── Misc ────
+*.bak
+*.tmp
