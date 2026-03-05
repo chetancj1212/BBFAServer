@@ -12,7 +12,7 @@ numpy==2.2.6
 pydantic==2.11.9
 
 # ONNX runtime for inference
-onnxruntime==1.24.2
+onnxruntime>=1.20.0
 
 # Attendance database dependencies
 ulid==1.1

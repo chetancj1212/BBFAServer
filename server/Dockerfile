@@ -7,16 +7,16 @@
 # ============================================================
 
 # ── Stage 1: Build dependencies ──
-FROM python:3.10-slim AS builder
+FROM python:3.12-slim AS builder
 
 WORKDIR /app
 
 # Install system deps needed to build opencv-python wheels
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        gcc \
-        libgl1 \
-        libglib2.0-0 && \
+    gcc \
+    libgl1 \
+    libglib2.0-0 && \
     rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
@@ -24,15 +24,15 @@ RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
 
 
 # ── Stage 2: Production image ──
-FROM python:3.10-slim
+FROM python:3.12-slim
 
 WORKDIR /app
 
 # Runtime system deps for OpenCV
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        libgl1 \
-        libglib2.0-0 && \
+    libgl1 \
+    libglib2.0-0 && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy installed Python packages from builder
